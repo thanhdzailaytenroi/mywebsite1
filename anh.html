@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Chơi Rubik hayvl</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+body{
+  font-family:Arial;
+  background:#ffffff;
+  color:white;
+  min-height:880vh;
+}
+/* ===== HEADER ===== */
+header{
+  background:#080808;
+  padding:16px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position: relative;
+  z-index:1000;
+}
+.logo{width:120px;}
+nav a{
+  margin:0 16px;
+  text-decoration:none;
+  font-size:24px;
+  font-weight:bold;
+  color:#fff;
+  padding:10px 20px;
+  border-radius:10px;
+  transition:.25s;
+}
+nav a:hover{
+  transform:scale(1.1);
+  background:#fff;
+  color:#080808;
+}
+.hero{
+  height:140vh;
+  padding:30px 80px;
+  background: linear-gradient(
+    -8deg,
+    #ffffff 0%,
+    #ffffff 33%,
+    #e10600 33%,
+    #e10600 35%,
+    #111111 35%
+  );
+  z-index: 2;
+  background-repeat:no-repeat;
+}
+.hero-text{
+  padding:30px 80px;
+}
+.hero-text h1{
+  font-size:57px;
+  letter-spacing:-3px;
+  line-height:1.2;
+}
+/* ===== CAROUSEL ===== */
+.carousel{
+  width:calc(280px * 3 + 40px * 2);
+  margin:auto;
+  margin-top:-730px;
+  overflow:hidden;
+  padding:80px 0;
+}
+.carousel-track{
+  display:flex;
+  gap:40px;
+  align-items:center;
+}
+.carousel-track img{
+  width:280px;
+  border-radius:16px;
+  opacity:.35;
+  transform:scale(.75);
+  filter:blur(1.5px) brightness(.7);
+  transition:.7s;
+}
+.carousel-track img.active{
+  opacity:1;
+  transform:scale(1);
+  filter:none;
+  box-shadow:0 0 20px rgba(255,200,120,.6);
+}
+.popup-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.popup-box{
+  position:relative;
+  animation:popupFade .5s ease;
+}
+.popup-img{
+  width:420px;
+  max-width:90vw;
+  border-radius:16px;
+}
+.close-btn{
+  position:absolute;
+  top:-10px;
+  right:-10px;
+  background:white;
+  border-radius:50%;
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  cursor:pointer;
+}
+@keyframes popupFade{
+  from{transform:scale(.7);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+.fact{
+  margin-top:36px;
+  border-left:4px solid #111;
+  padding-left:16px;
+}
+
+.fact span{
+  font-size:26px;
+  font-weight:800;
+  color:#111;
+}
+
+.fact small{
+  display:block;
+  color:#151515;
+  margin-top:4px;
+}
+.rubik-divider{
+  background:hsl(203, 100%, 50%);
+  padding:10px 0;
+  overflow:hidden;
+}
+.marquee-row{
+  width:100%;
+  overflow:hidden;
+  margin:8px 0;
+}
+.track{
+  display:flex;
+  gap:30px;
+  width:max-content;
+}
+.track img{
+  height:60px;
+  opacity:.85;
+  filter: drop-shadow(0 6px 14px rgba(255, 255, 255, 0.6));
+}
+
+/* animation */
+.top .track{
+  animation: scroll-left 35s linear infinite;
+}
+
+.bottom .track{
+  animation: scroll-right 35s linear infinite;
+}
+
+@keyframes scroll-left{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
+}
+
+@keyframes scroll-right{
+  from{ transform: translateX(-50%); }
+  to{ transform: translateX(0); }
+}
+.site-footer{
+  background:#000;
+  color:#fff;
+  padding:40px 60px 20px;
+}
+
+.site-footer h3{
+  font-size:28px;
+  letter-spacing:2px;
+  margin-bottom:15px;
+}
+
+.site-footer p{
+  color:#aaa;
+  max-width:600px;
+  line-height:1.6;
+}
+
+.footer-bottom{
+  margin-top:40px;
+  padding-top:20px;
+  border-top:1px solid #222;
+  text-align:center;
+  color:#666;
+  font-size:13px;
+}
+.comment-btn{
+  position: fixed;
+  left: 20px;
+  bottom: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: orange;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+}
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: .3s;
+  z-index: 1000;
+}
+.comment-panel{
+  position: fixed;
+  top: 0;
+  left: -350px;
+  width: 350px;
+  height: 100%;
+  background: #111;
+  padding: 30px;
+  transition: .3s;
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.comment-panel textarea{
+  height: 120px;
+  resize: none;
+  padding: 10px;
+}
+.comment-panel button{
+  padding: 10px;
+  background: orange;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+.comment-panel.active{
+  left: 0;
+}
+.overlay.active{
+  opacity: 1;
+  pointer-events: all;
+}
+.history-hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-bottom: 220px;
+  margin-top:-60px;
+  gap:60px;
+  height:130vh;
+  background: linear-gradient(
+    -8deg,
+    #171616 0%,
+    #171616 35%,
+    #e10600 35%,
+    #e10600 37%,
+    transparent 37%
+  );
+}
+.history-text{
+  width:50%;
+  color:#111;
+}
+
+.history-text h1{
+  font-size:60px;
+  font-weight:900;
+}
+
+.history-text h1 span{
+  color:#e10600;
+}
+
+.history-text p{
+  margin-top:20px;
+  font-size:22px;
+  color:#333;
+  font-weight:500;
+  line-height:1.6;
+}
+.history-image img{
+  width:650px;
+  margin-left: -400px;
+  height:auto;
+  display:block;
+}
+.timeline {
+  background: #171616;
+  position: relative;
+  padding: 200px 0;
+}
+.timeline-center {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  transform: translateX(-50%);
+}
+
+.line {
+  position: sticky;
+  top: 0;
+  height: 100vh;   /* cao bằng màn hình */
+  width: 4px;
+  background: linear-gradient(to bottom, lime, yellow, red);
+}
+.timeline-item {
+  height: 450px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+
+  color: white;
+  opacity: 0.3;
+  transition: 0.5s;
+}
+.left {
+  text-align: right;
+  padding-right: 60px;
+  font-size: 40px;
+}
+
+.right {
+  padding-left: 60px;
+  font-size: 18px;
+  max-width: 500px;
+}
+.timeline-item.active {
+  opacity: 1;
+  transform: scale(1.05);
+}
+.top-text {
+  font-size: 22px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+  transition: 0.5s;
+}
+
+.timeline-item.active .top-text {
+  opacity: 1;
+}
+.history-title {
+  background: #171616;
+  color: white;
+  text-align: center;
+  padding: 10px 20px 10px;
+}
+.history-title h1 {
+  font-size: 60px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 0 20px rgba(0,255,120,0.4);
+}
+</style>
+</head>
+<body>
+  <button class="comment-btn" onclick="openComment()">💬</button>
+<div class="overlay" onclick="closeComment()"></div>
+<div class="comment-panel">
+  <h3>Bình luận</h3>
+  <textarea id="commentInput" placeholder="Viết gì đó..."></textarea>
+  <button onclick="sendComment()">Gửi</button>
+  <div id="commentList"></div>
+</div>
+<header>
+  <img src="LOGO.png" class="logo">
+  <nav>
+    <a href="#">Tiểu sử</a>
+    <a href="giai3x3.html">Giải 3x3x3</a>
+    <a href="#">Coming soon...</a>
+  </nav>
+</header>
+<section class="hero">
+  <div class="hero-text">
+    <h1>KHỐI RUBIK: TRÒ CHƠI XẾP HÌNH MANG TÍNH BIỂU TƯỢNG NHẤT THẾ GIỚI</h1>
+  </div>
+</section>
+<div class="carousel">
+  <div class="carousel-track">
+    <img src="img1.png">
+    <img src="img2.png">
+    <img src="img3.png">
+    <img src="img4.png">
+    <img src="img5.png">
+  </div>
+</div>
+<section class="history-hero">
+  <div class="history-text">
+    <h1><span>50 YEARS</span> OF RUBIK'S CUBE</h1>
+    <p>
+      Nếu một khối Rubik có hơn 43 tỷ tỷ khả năng và hàng triệu khối Rubik được bán và giải mỗi năm, hãy nhân con số đó với 50 năm và bạn sẽ có... vô số khả năng!
+
+Hãy cùng khám phá một số cột mốc và khoảnh khắc mang tính biểu tượng đã giúp khẳng định vị thế của khối Rubik như một trong những trò chơi xếp hình bán chạy nhất mọi thời đại.
+    </p>
+  </div>
+
+  <div class="history-image">
+    <img src="erno.jpg" alt="Erno Rubik">
+  </div>
+</section>
+<!--<section class="rubik-divider">
+  <div class="marquee-row top">
+    <div class="track">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+      <img src="r1.png">
+      <img src="r2.png">
+    </div>
+  </div>
+</section>-->
+<section class="history-title">
+  <h1>Hãy khám phá lịch sử của Rubik</h1>
+</section>
+<section class="timeline">
+
+  <div class="timeline-center">
+    <div class="line"></div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 2026</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Tính đến tháng 2 năm 2026, kỷ lục thế giới về thời gian giải khối Rubik nhanh nhất là 2,76 giây. 
+      </p>
+      <p class="top-text">
+        Kỷ lục này được Teodor Zajder thiết lập tại sự kiện thi đấu GLS Big Cubes Gdańsk WCA vào ngày 8 tháng 2 năm 2026.
+      </p>
+      <video controls width="400">
+        <source src="thegioi.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 2024</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Năm 2024 đánh dấu kỷ niệm 50 năm ngày ra đời của khối Rubik.
+      </p>
+      <img src="anh2.jpg" alt="">
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 2021</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Rubik's được công ty giải trí dành cho trẻ em Spin Master của Canada mua lại.
+      </p>
+      <img src="anh3.jpg" alt="">
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 2018</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Nhận thấy niềm đam mê và tinh thần cạnh tranh của những người chơi Rubik, Red Bull chính thức ra mắt Giải vô địch Rubik thế giới Red Bull lần đầu tiên.
+      </p>
+      <img src="anh4.jpg" alt="">
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 2008</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Nhằm khẳng định vị thế là một món đồ chơi STEM, chương trình học tập "Bạn Có Thể Giải Khối Rubik" được ra mắt, dạy trẻ em cách giải khối Rubik.
+      </p>
+      <img src="anh5.jpg" alt="">
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 1987</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Rubik’s Magic được ra mắt và bán được hơn 14 triệu bộ trên toàn thế giới.
+      </p>
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 1975</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+        Ernő Rubik đã đăng ký bằng sáng chế cho cơ chế được sử dụng trong khối lập phương 3D của ông, hiện được biết đến với tên gọi Khối lập phương ma thuật.
+      </p>
+      <img src="anh6.jpg" alt="">
+    </div>
+  </div>
+  <div class="timeline-item">
+    <div class="left">
+      <h2> 1974</h2>
+    </div>
+    <div class="right">
+      <p class="top-text">
+  Ernő Rubik, một giáo sư kiến ​​trúc người Hungary, đã tạo ra một nguyên mẫu của khối lập phương ba chiều. Trong những năm sau đó, Rubik đã sử dụng nó để giảng dạy cho sinh viên của mình về không gian ba chiều.
+      </p>
+      <img src="anh7.jpg" alt="">
+    </div>
+  </div>
+</section>
+<div id="popupAd" class="popup-overlay">
+  <div class="popup-box">
+    <span class="close-btn">&times;</span>
+    <img src="thanhdz.jpg" class="popup-img">
+  </div>
+</div>
+<script>
+/* ================= CAROUSEL ================= */
+const track = document.querySelector(".carousel-track");
+const originals = [...track.children];
+const STEP = 320;
+track.prepend(originals.at(-2).cloneNode(true));
+track.prepend(originals.at(-1).cloneNode(true));
+track.append(originals[0].cloneNode(true));
+track.append(originals[1].cloneNode(true));
+const imgs = [...track.children];
+let index = 2;
+let timer;
+function render(anim = true) {
+  track.style.transition = anim ? "transform .7s" : "none";
+  track.style.transform = `translateX(${-(index - 1) * STEP}px)`;
+  imgs.forEach(i => i.classList.remove("active"));
+  imgs[index].classList.add("active");
+}
+function startCarousel() {
+  timer = setInterval(() => {
+    index++;
+    render(true);
+    if (index === imgs.length - 2) {
+      setTimeout(() => {
+        index = 2;
+        render(false);
+      }, 700);
+    }
+  }, 2600);
+}
+render(false);
+startCarousel();
+/* ================= POPUP ================= */
+const popupAd = document.getElementById("popupAd");
+const closeBtn = popupAd.querySelector(".close-btn");
+setTimeout(() => popupAd.style.display = "flex", 4000);
+setInterval(() => popupAd.style.display = "flex", 60000);
+closeBtn.onclick = () => popupAd.style.display = "none";
+popupAd.onclick = e => {
+  if (e.target === popupAd) popupAd.style.display = "none";
+};
+const reveals = document.querySelectorAll(".reveal");
+function revealOnScroll(){
+  const trigger = window.innerHeight * 0.85;
+  reveals.forEach(el => {
+    const top = el.getBoundingClientRect().top;
+    if(top < trigger){
+      el.classList.add("show");
+    }
+  });
+}
+window.addEventListener("scroll", revealOnScroll);
+revealOnScroll();
+</script>
+<script>
+  function openComment(){
+    document.querySelector(".comment-panel").classList.add("active");
+    document.querySelector(".overlay").classList.add("active");
+  }
+
+  function closeComment(){
+    document.querySelector(".comment-panel").classList.remove("active");
+    document.querySelector(".overlay").classList.remove("active");
+  }
+  function openComment(){
+    document.querySelector(".comment-panel").classList.add("active");
+    document.querySelector(".overlay").classList.add("active");
+  }
+
+  function closeComment(){
+    document.querySelector(".comment-panel").classList.remove("active");
+    document.querySelector(".overlay").classList.remove("active");
+  }
+
+  function sendComment(){
+    const input = document.getElementById("commentInput");
+    const list = document.getElementById("commentList");
+
+    if(input.value.trim() === "") return;
+
+    const newComment = document.createElement("p");
+    newComment.textContent = input.value;
+    newComment.style.background = "#222";
+    newComment.style.padding = "8px";
+    newComment.style.marginTop = "10px";
+    newComment.style.borderRadius = "6px";
+
+    list.appendChild(newComment);
+
+    input.value = "";
+  }
+</script>
+<script> const items = document.querySelectorAll(".timeline-item");
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+      }
+    });
+  }, {
+    threshold: 0.6
+  });
+  
+  items.forEach(item => observer.observe(item));</script>
+<footer class="site-footer">
+  
+  <h2>RUBIK </h2>
+  <p>
+    Lê Đức Thành</p>
+  <p>Phạm Minh Đức</p>
+  <p>Nguyễn Minh Nhật</p>
+  <p>Hồ Thị Hoàng Anh</p>
+  <div class="footer-bottom">
+    choi rubik hayvl
+  </div>
+</footer>
+</body>
+</html>

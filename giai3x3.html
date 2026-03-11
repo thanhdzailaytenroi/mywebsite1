@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Chơi Rubik hayvl</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial;
+  background:#232222;
+  color:white;
+}
+
+/* ===== HEADER ===== */
+header{
+  background:#080808;
+  padding:16px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:relative;
+  z-index:1000;
+}
+
+.logo{
+  width:120px;
+}
+
+nav a{
+  margin:0 16px;
+  text-decoration:none;
+  font-size:24px;
+  font-weight:bold;
+  color:#fff;
+  padding:10px 20px;
+  border-radius:10px;
+  transition:.25s;
+}
+
+nav a:hover{
+  transform:scale(1.1);
+  background:#fff;
+  color:#080808;
+}
+
+/* ===== HERO ===== */
+.hero2{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:80px 20px;
+}
+
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.65);
+}
+
+.hero2-content{
+  position:relative;
+  max-width:900px;
+  padding:20px;
+  animation:fadeUp 1s ease;
+}
+
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(40px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.hero-badge{
+  background:rgba(255,150,0,0.2);
+  color:orange;
+  padding:8px 18px;
+  border-radius:20px;
+  font-size:14px;
+  display:inline-block;
+  margin-bottom:20px;
+}
+
+.hero2 h1{
+  font-size:64px;
+  font-weight:800;
+  margin-bottom:20px;
+}
+.hero-img{
+  width:300px;
+  margin:20px 0;
+  border-radius:15px;
+}
+.gradient-text{
+  background:linear-gradient(90deg,#ff6600,#ffcc00);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero2 p{
+  color:#fffafa;
+  font-size:22px;
+  line-height:1.6;
+  margin-bottom:30px;
+}
+
+.hero-buttons{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+}
+
+/* ===== BUTTONS ===== */
+.btn{
+  padding:14px 28px;
+  border-radius:10px;
+  text-decoration:none;
+  color:white;
+  font-weight:bold;
+}
+
+.btn-dark{ background:#333; }
+.btn-orange{ background:orange; }
+
+/* ===== FOOTER ===== */
+.site-footer{
+  background:#000;
+  color:#fff;
+  padding:60px 80px 30px;
+}
+
+.site-footer h2{
+  margin-bottom:15px;
+}
+
+.site-footer p{
+  color:#aaa;
+  line-height:1.6;
+}
+
+.footer-bottom{
+  margin-top:40px;
+  padding-top:20px;
+  border-top:1px solid #222;
+  text-align:center;
+  color:#666;
+  font-size:13px;
+}
+
+/* ===== COMMENT PANEL ===== */
+.comment-btn{
+  position:fixed;
+  left:20px;
+  bottom:30px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:none;
+  background:orange;
+  color:white;
+  font-size:24px;
+  cursor:pointer;
+  z-index:1001;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  z-index:1000;
+}
+
+.overlay.active{
+  opacity:1;
+  pointer-events:all;
+}
+
+.comment-panel{
+  position:fixed;
+  top:0;
+  left:-350px;
+  width:350px;
+  height:100%;
+  background:#111;
+  padding:30px;
+  transition:.3s;
+  z-index:1002;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.comment-panel.active{
+  left:0;
+}
+
+.comment-panel textarea{
+  height:120px;
+  resize:none;
+  padding:10px;
+}
+
+.comment-panel button{
+  padding:10px;
+  background:orange;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+.comment-item{
+  background:#222;
+  padding:8px;
+  border-radius:6px;
+}
+#kyhieu{
+  background:#2c2c2c; /* tùy bạn */
+  padding:20px;
+}
+
+.kyhieu-wrap{
+  display:flex;
+  align-items:center;
+}
+
+.hero-img{
+  width:300px;   /* nếu quá to sẽ đẩy chữ xuống */
+  max-width:100%;
+}
+
+.step-text{
+  margin-left:20px;
+  font-size:22px;
+  color:white;
+}
+.step-section{
+  padding:60px 10%;
+  display:block;
+  flex-direction:column;
+}
+
+.step-title{
+  text-align:center;
+  font-size:32px;
+  margin-bottom:40px;
+}
+
+.step-card{
+  background:#1f1f1f;
+  border-radius:15px;
+  padding:30px;
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
+}
+
+.step-number{
+  background:#ff9900;
+  color:black;
+  font-weight:bold;
+  padding:10px 15px;
+  border-radius:10px;
+}
+
+.step-content h3{
+  margin-top:0;
+}
+
+.note-box{
+  background:#2a1f12;
+  padding:15px;
+  margin-top:20px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="LOGO.png" class="logo">
+  <nav>
+    <a href="anh.html">Tiểu sử</a>
+    <a href="giai3x3.html">Giải 3x3x3</a>
+    <a href="#">Coming soon...</a>
+  </nav>
+</header>
+
+<button class="comment-btn" onclick="toggleComment()">💬</button>
+
+<div class="overlay" onclick="toggleComment()"></div>
+
+<div class="comment-panel">
+  <h3>Bình luận</h3>
+  <textarea id="commentInput" placeholder="Viết gì đó..."></textarea>
+  <button onclick="sendComment()">Gửi</button>
+  <div id="commentList"></div>
+</div>
+
+<section class="hero2">
+  <div class="hero-overlay"></div>
+  <div class="hero2-content">
+    <span class="hero-badge">📖 Hướng dẫn cơ bản</span>
+    <h1>Cách giải <span class="gradient-text">Rubik 3x3</span></h1>
+    <p>Công thức cơ bản 🌹</p>
+
+    <div class="hero-buttons">
+      <a href="#kyhieu" class="btn btn-dark">Học ký hiệu</a>
+      <a href="quitrinh" class="btn btn-orange">Quy Trình</a>
+    </div>
+  </div>
+</section>
+<section id="kyhieu">
+  <div class="kyhieu-wrap">
+    <img src="kihieu.png" class="hero-img">
+    <span class="step-text"><h2> ---------------------------Ký hiệu cơ bản----------------------------- </h2>
+      Ký hiệu không có dấu ' nghĩa là xoay 90 độ theo chiều kim đồng hồ.
+      Ký hiệu có dấu ' (ví dụ R') nghĩa là xoay 90 độ ngược chiều kim đồng hồ.</span>
+  </div>
+</section>
+<section id="quitrinh" class="step-section">
+
+  <h2 class="step-title">2. Quy trình 7 bước (LBL)</h2>
+
+  <div class="step-card">
+    
+    <div class="step-number">01</div>
+
+    <div class="step-content">
+      <h3>Làm dấu cộng trắng (White Cross)</h3>
+      <p>
+        Mục tiêu là tạo ra hình dấu cộng màu trắng ở mặt trên.
+        Các cạnh màu trắng phải khớp màu với các tâm bên cạnh.
+      </p>
+
+      <div class="note-box">
+        bước này quan trọng để giải rubik
+      </div>
+
+    </div>
+  </div>
+  <div class="step-card">
+    
+    <div class="step-number">02</div>
+
+    <div class="step-content">
+      <h3>giải tầng 1</h3>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="step-card">
+    
+    <div class="step-number">03</div>
+
+    <div class="step-content">
+      <h3>giải tầng 2</h3>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="step-card">
+    
+    <div class="step-number">04</div>
+
+    <div class="step-content">
+      <h3>giải mặt vàng</h3>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="step-card">
+    
+    <div class="step-number">05</div>
+
+    <div class="step-content">
+      <h3>giải tầng 3</h3>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+<footer class="site-footer">
+  <h2>RUBIK</h2>
+  <p>Lê Đức Thành</p>
+  <p>Phạm Minh Đức</p>
+  <p>Nguyễn Minh Nhật</p>
+  <p>Hồ Thị Hoàng Anh</p>
+  <div class="footer-bottom">© 2026 Rubik Việt Nam</div>
+</footer>
+
+<script>
+function toggleComment(){
+  document.querySelector(".comment-panel").classList.toggle("active");
+  document.querySelector(".overlay").classList.toggle("active");
+}
+
+function sendComment(){
+  const input = document.getElementById("commentInput");
+  const list = document.getElementById("commentList");
+
+  if(input.value.trim() === "") return;
+
+  const newComment = document.createElement("p");
+  newComment.textContent = input.value;
+  newComment.classList.add("comment-item");
+
+  list.appendChild(newComment);
+  input.value = "";
+}
+</script>
+
+</body>
+</html>
